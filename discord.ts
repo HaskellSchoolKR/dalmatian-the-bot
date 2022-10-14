@@ -11,7 +11,7 @@ import { ApplicationCommandOptionTypes, InteractionResponseTypes } from "https:/
 
 
 const bot = createBot({
-    token: "MTAzMDAwOTg5NjgzOTY4MDA0MA.GFf74D.QbICOj8pLXriLp2TpjOuUBtWXxspColKSTpIds", //Deno.env.get("TOKEN")!,
+    token: Deno.env.get("TOKEN")!,
     intents: GatewayIntents.Guilds | Intents.GuildMessages,
     events: {
         ready() {
