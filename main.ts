@@ -12,6 +12,11 @@ import { search } from './hoogle.ts';
 const bot = createBot({
     token: Deno.env.get("TOKEN")!,
     intents: GatewayIntents.Guilds | Intents.GuildMessages,
+    events: {
+        ready() {
+            console.log('live')
+        }
+    }
 });
 
 await createGlobalApplicationCommand(bot, {
