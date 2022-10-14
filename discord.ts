@@ -11,9 +11,7 @@ import { ApplicationCommandOptionTypes, InteractionResponseTypes } from "https:/
 
 
 const bot = createBot({
-    token: Deno.env.get("TOKEN")!,
-    // botId: 
-    // Deno.env.get("APP_ID")
+    token: "MTAzMDAwOTg5NjgzOTY4MDA0MA.GFf74D.QbICOj8pLXriLp2TpjOuUBtWXxspColKSTpIds", //Deno.env.get("TOKEN")!,
     intents: GatewayIntents.Guilds | Intents.GuildMessages,
     events: {
         ready() {
@@ -23,12 +21,12 @@ const bot = createBot({
 });
 
 createGlobalApplicationCommand(bot, {
-    description: "this is just test",
-    name: "test",
+    description: "search for hoogle",
+    name: "hoogle",
     options: [
         {
-            description: "test",
-            name: "test",
+            description: "typing your searching content",
+            name: "name",
             type: ApplicationCommandOptionTypes.String,
             required: true,
         }
@@ -47,7 +45,14 @@ bot.events.interactionCreate = (_, interaction) => {
                 {
                     type: InteractionResponseTypes.ChannelMessageWithSource,
                     data: {
-                        content: `🏓 Pong! ${20}ms`,
+                        embeds: [{
+                            title: "name",
+                            description: "typing content",
+                            color: 15576321,
+                            author: {
+                                name: "hoogle"
+                            }
+                        }],
                     },
                 },
             );
