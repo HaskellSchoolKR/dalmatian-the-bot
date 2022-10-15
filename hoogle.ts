@@ -1,5 +1,5 @@
-import { Schema, validate } from "https://deno.land/x/jtd@v0.1.0/mod.ts";
-import outdent from 'http://deno.land/x/outdent@v0.8.0/mod.ts';
+import { Schema, validate } from 'https://deno.land/x/jtd@v0.1.0/mod.ts'
+import outdent from 'http://deno.land/x/outdent@v0.8.0/mod.ts'
 import { useEnvVar } from './useEnvVar.ts'
 
 interface SearchOptions {

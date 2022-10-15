@@ -2,15 +2,14 @@ import { serve } from 'https://deno.land/std@0.159.0/http/mod.ts'
 import { useEnvVar } from './useEnvVar.ts'
 import { search } from './hoogle.ts'
 import { validateRequest, json } from 'https://deno.land/x/sift@0.6.0/mod.ts'
-import { verifySignature } from 'https://deno.land/x/discordeno@17.0.0/mod.ts';
-import { outdent } from 'https://deno.land/x/outdent@v0.8.0/src/index.ts';
+import { verifySignature } from 'https://deno.land/x/discordeno@17.0.0/mod.ts'
+import { outdent } from 'https://deno.land/x/outdent@v0.8.0/src/index.ts'
 
 const port = parseInt(useEnvVar('PORT', 'Interaction endpoint port'))
 const PUB_KEY = useEnvVar('PUB_KEY', 'Application public key')
-const BOT_TOKEN = useEnvVar('BOT_TOKEN', 'Bot token')
 
 async function pingHandler(): Promise<Response> {
-  return json({ type: 1 })
+  return json({ type: 1 }) // ping
 }
 
 async function hoogleCommandHandler(jsonBody: any): Promise<Response> {

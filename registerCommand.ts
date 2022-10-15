@@ -1,4 +1,4 @@
-import { useEnvVar } from './useEnvVar.ts';
+import { useEnvVar } from './useEnvVar.ts'
 
 const APP_ID = useEnvVar('APP_ID', 'Application id')
 const BOT_TOKEN = useEnvVar('BOT_TOKEN', 'Bot token')
