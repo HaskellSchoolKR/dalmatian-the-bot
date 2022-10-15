@@ -17,4 +17,4 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "dalmatian-the-bot"
-          entrypoint: "./main.ts"
+          entrypoint: "./mod.ts"
