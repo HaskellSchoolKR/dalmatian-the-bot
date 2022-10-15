@@ -152,7 +152,7 @@ const handler = async (request: Request): Promise<Response> => {
     signature,
     timestamp,
     body: await request.text(),
-  }) // code from disordeno example. related with disord's credential requirements
+  }) // code from disordeno example. related to disord's credential requirements
 
   if (!isValid)
     return json({ error: 'Invalid request. could not verify the request' }, { status: 401 })

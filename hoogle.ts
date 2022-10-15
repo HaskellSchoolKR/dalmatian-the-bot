@@ -7,7 +7,7 @@ interface SearchOptions {
   count?: string
 }
 
-type SearchResult = Array<{
+export type SearchResult = Array<{
   url: string
   module: {
     name: string
@@ -19,7 +19,7 @@ type SearchResult = Array<{
   }
   item: string
   docs: string
-}> // useless 'type' field is ignored.
+}> // useless 'type' field is ignored
 
 const searchResultSchema = {
   elements: {
@@ -39,7 +39,7 @@ const searchResultSchema = {
       },
       item: { type: 'string' },
       docs: { type: 'string '},
-      type: { type: 'string' } // I don't know why this field is present in API, but it exists.
+      type: { type: 'string' } // I don't know why this field is present in API, but it exists
     }
   }
 } as Schema
