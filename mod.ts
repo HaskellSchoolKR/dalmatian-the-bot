@@ -40,7 +40,23 @@ async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
             name: `${def.package.name}/${def.module.name}`
           }
         })
-      )
+      ),
+      components: [
+        {
+          type: 2, // button
+          style: 1, // primary
+          label: 'previous',
+          disabled: true,
+          custom_id: 'prev'
+        },
+        {
+          type: 2, // button
+          style: 1, // primary
+          label: 'next',
+          disabled: true,
+          custom_id: 'next'
+        }
+      ]
     }
   })
 }
