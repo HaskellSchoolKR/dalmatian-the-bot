@@ -7,12 +7,12 @@ import { verifySignature } from 'https://deno.land/x/discordeno@17.0.0/mod.ts';
 const port = parseInt(useEnvVar('PORT', 'Interaction endpoint port'))
 const PUB_KEY = useEnvVar('PUB_KEY', 'Application public key')
 
-async function pingHandler(_: Request): Promise<Response> {
+async function pingHandler(): Promise<Response> {
   return new Response(JSON.stringify({ type: 1 }), { status: 200 })
 }
 
-async function hoogleCommandHandler(request: Request): Promise<Response> {
-  const { data: { options: [ { value: query } ] } } = await request.json()
+async function hoogleCommandHandler(json: any): Promise<Response> {
+  const { data: { options: [ { value: query } ] } } = json
   const searchResult = await search(query)
 
   return new Response(
@@ -63,8 +63,8 @@ const handler = async (request: Request): Promise<Response> => {
 
   const jsonBody = JSON.parse(body)
 
-  if (request.method === 'POST' && jsonBody?.type === 1) return pingHandler(request)
-  if (request.method === 'POST' && jsonBody?.type === 2 && jsonBody?.data?.name === 'hoogle') return hoogleCommandHandler(request)
+  if (request.method === 'POST' && jsonBody?.type === 1) return pingHandler()
+  if (request.method === 'POST' && jsonBody?.type === 2 && jsonBody?.data?.name === 'hoogle') return hoogleCommandHandler(jsonBody)
   else return new Response('cannot interpret request', { status: 404 })
 }
 
