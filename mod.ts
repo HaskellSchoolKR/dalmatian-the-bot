@@ -25,7 +25,7 @@ async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
     search result: ${JSON.stringify(searchResult)}
   `)
 
-  if (searchResult.length === 0) return json({ type: 1, data: { content: 'no search result'} })
+  if (searchResult.length === 0) return json({ type: 4, data: { content: 'no search result'} })
 
   return json({
     type: 4, // CHANNEL_MESSAGE_WITH_SOURCE
