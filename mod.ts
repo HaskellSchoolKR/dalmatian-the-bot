@@ -63,6 +63,8 @@ const handler = async (request: Request): Promise<Response> => {
 
   const jsonBody = JSON.parse(body)
 
+  console.log(body)
+
   if (request.method === 'POST' && jsonBody?.type === 1) return pingHandler()
   if (request.method === 'POST' && jsonBody?.type === 2 && jsonBody?.data?.name === 'hoogle') return hoogleCommandHandler(jsonBody)
   else return new Response('cannot interpret request', { status: 404 })
