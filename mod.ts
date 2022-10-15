@@ -47,7 +47,7 @@ const handler = async (request: Request): Promise<Response> => {
   const signature = request.headers.get('X-Signature-Ed25519')!;
   const timestamp = request.headers.get('X-Signature-Timestamp')!;
 
-  const { isValid } = verifySignature({
+  const { body, isValid } = verifySignature({
     publicKey: PUB_KEY,
     signature,
     timestamp,
@@ -61,7 +61,7 @@ const handler = async (request: Request): Promise<Response> => {
     )
   }
 
-  const jsonBody = await request.json()
+  const jsonBody = JSON.parse(body)
 
   if (request.method === 'POST' && jsonBody?.type === 1) return pingHandler(request)
   if (request.method === 'POST' && jsonBody?.type === 2 && jsonBody?.data?.name === 'hoogle') return hoogleCommandHandler(request)
