@@ -37,12 +37,13 @@ const searchResultSchema = {
         }
       },
       item: { type: 'string' },
-      docs: { type: 'string '}
+      docs: { type: 'string '},
+      type: { type: 'string' }
     }
   }
 } as Schema
 
-const HOOGLE = Deno.env.get('HOOGLE') ?? 'https://hoogle.haskell.org'
+const HOOGLE = Deno.env.get('HOOGLE') ?? 'hoogle.haskell.org'
 
 export async function search(query: string, options: SearchOptions = {}): Promise<SearchResult> {
   const completedOptions = Object.assign({ start: '1', count: '1' }, options)
@@ -52,7 +53,7 @@ export async function search(query: string, options: SearchOptions = {}): Promis
     hoogle: query,
     ...completedOptions
   })
-  const apiResponse = (await fetch(`https://${HOOGLE}?${queryParams}`)).json()
+  const apiResponse = await (await fetch(`https://${HOOGLE}?${queryParams}`)).json()
   const schemaViolations = validate(searchResultSchema, apiResponse)
 
   if (schemaViolations.length > 0) {
