@@ -36,7 +36,7 @@ bot.events.interactionCreate = async (_, interaction) => {
     if (interaction.type !== InteractionTypes.ApplicationCommand) return;
 
     //@ts-ignore
-    const result = await search(interaction.data?.options[0].value as string)[0]
+    const result = (await search(interaction.data?.options[0].value as string))[0]
 
     bot.helpers.sendInteractionResponse(
       interaction.id,
@@ -45,11 +45,11 @@ bot.events.interactionCreate = async (_, interaction) => {
           type: InteractionResponseTypes.ChannelMessageWithSource,
           data: {
               embeds: [{
-                  title: `${result.package.name}/${result.module.name} - ${result.item}`,
+                  title: `\`${result.item}\` from ${result.module.name}/${result.package.name}`,
                   description: result.docs,
                   color: 15576321,
                   author: {
-                      name: result.item
+                      name: `${result.item}`
                   },
                   url: result.url
               }],
