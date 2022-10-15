@@ -67,7 +67,7 @@ async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
 }
 
 async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
-  const { data: { custom_id: action }, message: { id, channel_id } } = jsonBody
+  const { data: { custom_id: action } } = jsonBody
   const { type, index, query } = JSON.parse(action)
   const nextIndex = type === 'prev' ? index - 1 : index + 1
 
@@ -79,16 +79,8 @@ async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
 
   if (searchResult.length === 0) return json({ type: 4, data: { content: 'no search result' } })
 
-  await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Accept': 'application/json',
-      'Authorization': `Bot ${BOT_TOKEN}`
-    }
-  })
-
   return json({
-    type: 4, // CHANNEL_MESSAGE_WITH_SOURCE
+    type: 7, // UPDATE_MESSAGE
     data: {
       embeds: searchResult.map(
         def => ({
