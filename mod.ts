@@ -3,6 +3,7 @@ import { useEnvVar } from './useEnvVar.ts'
 import { search } from './hoogle.ts'
 import { validateRequest } from 'https://deno.land/x/sift@0.6.0/mod.ts'
 import { verifySignature } from 'https://deno.land/x/discordeno@17.0.0/mod.ts';
+import { outdent } from 'https://deno.land/x/outdent@v0.8.0/src/index.ts';
 
 const port = parseInt(useEnvVar('PORT', 'Interaction endpoint port'))
 const PUB_KEY = useEnvVar('PUB_KEY', 'Application public key')
@@ -13,6 +14,11 @@ async function pingHandler(): Promise<Response> {
 
 async function hoogleCommandHandler(json: any): Promise<Response> {
   const { data: { options: [ { value: query } ] } } = json
+
+  console.info(outdent`
+    incoming query: ${query}
+  `)
+
   const searchResult = await search(query)
 
   return new Response(
@@ -63,7 +69,9 @@ const handler = async (request: Request): Promise<Response> => {
 
   const jsonBody = JSON.parse(body)
 
-  console.log(body)
+  console.info(outdent`
+    incoming json: ${body}
+  `)
 
   if (request.method === 'POST' && jsonBody?.type === 1) return pingHandler()
   if (request.method === 'POST' && jsonBody?.type === 2 && jsonBody?.data?.name === 'hoogle') return hoogleCommandHandler(jsonBody)
