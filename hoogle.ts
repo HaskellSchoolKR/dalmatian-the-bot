@@ -19,7 +19,7 @@ type SearchResult = Array<{
   }
   item: string
   docs: string
-}>
+}> // useless 'type' field is ignored.
 
 const searchResultSchema = {
   elements: {
@@ -39,7 +39,7 @@ const searchResultSchema = {
       },
       item: { type: 'string' },
       docs: { type: 'string '},
-      type: { type: 'string' }
+      type: { type: 'string' } // I don't know why this field is present in API, but it exists.
     }
   }
 } as Schema
@@ -47,32 +47,42 @@ const searchResultSchema = {
 const HOOGLE = useEnvVar('HOOGLE', 'Hoogle domain name')
 
 export async function search(query: string, options: SearchOptions = {}): Promise<SearchResult> {
-  const completedOptions = Object.assign({ start: '1', count: '1' }, options)
+  const completedOptions = { start: '1', count: '1', ...options }
   const queryParams = new URLSearchParams({
     mode: 'json',
     format: 'text',
     hoogle: query,
     ...completedOptions
   })
-  const apiResponse = await (await fetch(`https://${HOOGLE}?${queryParams}`)).json()
-  const schemaViolations = validate(searchResultSchema, apiResponse)
+
+  const apiResponse = await (await fetch(`https://${HOOGLE}?${queryParams}`)).text()
+  const apiJSONResponse = JSON.parse(apiResponse)
+  const schemaViolations = validate(searchResultSchema, apiJSONResponse)
 
   if (schemaViolations.length > 0) {
     const formattedViolations = schemaViolations.map(
       ({ instancePath, schemaPath }) => outdent`
-        ${instancePath.join('.')} violates ${schemaPath.join('.')}
-      `
+         'apiJSONResponse.${instancePath.join('.')}' violates schema '${schemaPath.join('.')}'
+       `
     ).join('\n')
     const errorMessage = outdent`
-      Hoogle API response failed to match json schema.
+      Hoogle's response for query '${query}' failed to pass json validation.
+      
       got:
-      ${JSON.stringify(apiResponse)}
+      ${apiResponse}
+              
       violations:
       ${formattedViolations}
-    ` //@TODO: implement pretty print for api response
+    `
 
     throw new Error(errorMessage)
   }
 
-  return apiResponse
+  console.info(outdent`
+    querying '${query}' succeed with response:
+      
+    ${apiResponse}
+  `)
+
+  return apiJSONResponse as SearchResult
 }
