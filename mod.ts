@@ -1,7 +1,7 @@
 import { serve } from 'https://deno.land/std@0.159.0/http/mod.ts'
 import { useEnvVar } from './useEnvVar.ts'
 import { search } from './hoogle.ts'
-import { validateRequest } from 'https://deno.land/x/sift@0.6.0/mod.ts'
+import { validateRequest, json } from 'https://deno.land/x/sift@0.6.0/mod.ts'
 import { verifySignature } from 'https://deno.land/x/discordeno@17.0.0/mod.ts';
 import { outdent } from 'https://deno.land/x/outdent@v0.8.0/src/index.ts';
 
@@ -9,11 +9,11 @@ const port = parseInt(useEnvVar('PORT', 'Interaction endpoint port'))
 const PUB_KEY = useEnvVar('PUB_KEY', 'Application public key')
 
 async function pingHandler(): Promise<Response> {
-  return new Response(JSON.stringify({ type: 1 }), { status: 200 })
+  return json({ type: 1 })
 }
 
-async function hoogleCommandHandler(json: any): Promise<Response> {
-  const { data: { options: [ { value: query } ] } } = json
+async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
+  const { data: { options: [ { value: query } ] } } = jsonBody
 
   console.info(outdent`
     incoming query: ${query}
@@ -25,19 +25,12 @@ async function hoogleCommandHandler(json: any): Promise<Response> {
     search result: ${JSON.stringify(searchResult)}
   `)
 
-  const res = JSON.stringify({
+  return json({
     type: 4, // CHANNEL_MESSAGE_WITH_SOURCE
     data: {
       content: query
     }
   })
-
-  console.info(res)
-
-  return new Response(
-    res,
-    { status: 200 }
-  )
 }
 
 const handler = async (request: Request): Promise<Response> => {
@@ -48,7 +41,7 @@ const handler = async (request: Request): Promise<Response> => {
   })
 
   if (error)
-    return new Response(JSON.stringify({ error: error.message }), { status: error.status })
+    return json({ error: error.message }, { status: error.status })
 
   const signature = request.headers.get('X-Signature-Ed25519')!;
   const timestamp = request.headers.get('X-Signature-Timestamp')!;
@@ -61,10 +54,7 @@ const handler = async (request: Request): Promise<Response> => {
   })
 
   if (!isValid) {
-    return new Response(
-      JSON.stringify({ error: 'Invalid request; could not verify the request' }),
-      { status: 401 }
-    )
+    return json({ error: 'Invalid request; could not verify the request' }, { status: 401 })
   }
 
   const jsonBody = JSON.parse(body)
