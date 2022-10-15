@@ -28,7 +28,17 @@ async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
   return json({
     type: 4, // CHANNEL_MESSAGE_WITH_SOURCE
     data: {
-      content: query
+      embeds: searchResult.map(
+        def => ({
+          title: def.item,
+          description: def.docs,
+          url: def.url,
+          color: 16750592, // 0xFF9800, yellow
+          author: {
+            name: `${def.package.name}/${def.module.name}`
+          }
+        })
+      )
     }
   })
 }
