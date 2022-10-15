@@ -160,7 +160,7 @@ const handler = async (request: Request): Promise<Response> => {
   try {
     const parsedBody = JSON.parse(body)
 
-    console.info(`
+    console.info(outdent`
       request validation process succeed; now processing:
       
       ${body}
