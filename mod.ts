@@ -21,6 +21,29 @@ async function hoogleCommandHandler(json: any): Promise<Response> {
 
   const searchResult = await search(query)
 
+  console.info(outdent`
+    search result: ${JSON.stringify(searchResult)}
+  `)
+
+  console.info(outdent`
+    ${
+    JSON.stringify({
+      type: 4, // CHANNEL_MESSAGE_WITH_SOURCE
+      data: {
+        embeds: searchResult.map(
+          def => ({
+            title: def.item,
+            description: def.docs,
+            url: def.url,
+            color: 16750592, // 0xFF9800, yellow
+            author: `${def.package}/${def.module}`
+          })
+        )
+      }
+    })
+  }
+  `)
+
   return new Response(
     JSON.stringify({
       type: 4, // CHANNEL_MESSAGE_WITH_SOURCE
