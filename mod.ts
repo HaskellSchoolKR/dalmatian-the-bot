@@ -35,7 +35,9 @@ async function hoogleCommandHandler(json: any): Promise<Response> {
             description: def.docs,
             url: def.url,
             color: 16750592, // 0xFF9800, yellow
-            author: `${def.package.name}/${def.module.name}`
+            author: {
+              name: `${def.package.name}/${def.module.name}`
+            }
           })
         )
       }
