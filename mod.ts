@@ -43,16 +43,10 @@ async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
       ),
       components: [
         {
-          type: 2, // button
-          style: 1, // primary
-          label: 'previous',
-          custom_id: 'prev'
-        },
-        {
-          type: 2, // button
-          style: 1, // primary
-          label: 'next',
-          custom_id: 'next'
+          "type": 2,
+          "label": "Click me!",
+          "style": 1,
+          "custom_id": "click_one"
         }
       ]
     }
