@@ -26,4 +26,4 @@ const response = await fetch(`https://discord.com/api/v10/applications/${APP_ID}
   body: JSON.stringify(createCommandOption)
 })
 
-console.log(await response.json())
+console.dir(await response.json())
