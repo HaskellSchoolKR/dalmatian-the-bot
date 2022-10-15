@@ -25,25 +25,6 @@ async function hoogleCommandHandler(json: any): Promise<Response> {
     search result: ${JSON.stringify(searchResult)}
   `)
 
-  console.info(outdent`
-    ${
-    JSON.stringify({
-      type: 4, // CHANNEL_MESSAGE_WITH_SOURCE
-      data: {
-        embeds: searchResult.map(
-          def => ({
-            title: def.item,
-            description: def.docs,
-            url: def.url,
-            color: 16750592, // 0xFF9800, yellow
-            author: `${def.package.name}/${def.module.name}`
-          })
-        )
-      }
-    })
-  }
-  `)
-
   return new Response(
     JSON.stringify({
       type: 4, // CHANNEL_MESSAGE_WITH_SOURCE
@@ -54,7 +35,7 @@ async function hoogleCommandHandler(json: any): Promise<Response> {
             description: def.docs,
             url: def.url,
             color: 16750592, // 0xFF9800, yellow
-            author: `${def.package}/${def.module}`
+            author: `${def.package.name}/${def.module.name}`
           })
         )
       }
