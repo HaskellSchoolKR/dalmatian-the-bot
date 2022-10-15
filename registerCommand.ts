@@ -1,8 +1,7 @@
-const APP_ID = Deno.env.get('APP_ID')
-const BOT_TOKEN = Deno.env.get('BOT_TOKEN')
+import { useEnvVar } from './useEnvVar.ts';
 
-if (!APP_ID) throw new Error(`Application id is not registered, please define environment variable 'APP_ID`)
-if (!BOT_TOKEN) throw new Error(`Bot token is not registered, please define environment variable 'BOT_TOKEN'`)
+const APP_ID = useEnvVar('APP_ID', 'Application id')
+const BOT_TOKEN = useEnvVar('BOT_TOKEN', 'Bot token')
 
 const createCommandOption = {
   name: 'hoogle',

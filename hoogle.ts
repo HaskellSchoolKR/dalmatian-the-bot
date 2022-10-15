@@ -1,5 +1,6 @@
 import { Schema, validate } from "https://deno.land/x/jtd@v0.1.0/mod.ts";
 import outdent from 'http://deno.land/x/outdent@v0.8.0/mod.ts';
+import { useEnvVar } from './useEnvVar.ts'
 
 interface SearchOptions {
   start?: string
@@ -43,7 +44,7 @@ const searchResultSchema = {
   }
 } as Schema
 
-const HOOGLE = Deno.env.get('HOOGLE') ?? 'hoogle.haskell.org'
+const HOOGLE = useEnvVar('HOOGLE', 'Hoogle domain name')
 
 export async function search(query: string, options: SearchOptions = {}): Promise<SearchResult> {
   const completedOptions = Object.assign({ start: '1', count: '1' }, options)
