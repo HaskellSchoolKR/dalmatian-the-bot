@@ -8,6 +8,7 @@ import { outdent } from 'https://deno.land/x/outdent@v0.8.0/src/index.ts'
 
 const port = parseInt(useEnvVar('PORT', 'Interaction endpoint port'))
 const PUB_KEY = useEnvVar('PUB_KEY', 'Application public key')
+const BOT_TOKEN = useEnvVar('BOT_TOKEN', 'Bot token')
 
 //@TODO: use sift's high level api
 
@@ -142,10 +143,14 @@ async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
       return json(updateHoogleSearchResultMessage(query, nextIndex, origin, searchResult))
     }
     if (type === "remove") {
-      const { application_id, token } = jsonBody
+      const { channel_id, message: { id } } = jsonBody
 
-      console.info((await fetch(`https://discord.com/api/v10/webhooks/${application_id}/${token}/messages/@original`, {
-        method: 'DELETE'
+      console.info((await fetch(`/channels/${channel_id}/messages/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bot ${BOT_TOKEN}`,
+        }
       })).status)
 
       //dummy response, will be ignored.
