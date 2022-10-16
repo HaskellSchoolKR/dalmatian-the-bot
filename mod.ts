@@ -96,7 +96,7 @@ async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
       return json({
         type: 4,
         data: {
-          content: `cannot find any definition for query '${query}'.`
+          content: `cannot find any definition for query \`${query}\`.`
         },
         components: [
           {
