@@ -120,6 +120,10 @@ async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
   try {
     const { type, index, query, origin } = JSON.parse(action)
 
+    console.info(`
+      received action request from '${id}' for '${origin}'
+    `)
+
     if (origin !== id) throw new Error(`Not a owner`)
 
     if (type === "prev" || type === "next") {
