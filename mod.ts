@@ -145,7 +145,7 @@ async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
     if (type === "remove") {
       const { channel_id, message: { id } } = jsonBody
 
-      console.info((await fetch(`/channels/${channel_id}/messages/${id}`, {
+      console.info((await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages/${id}`, {
         method: 'DELETE',
         headers: {
           'Accept': 'application/json',
