@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.159.0/http/mod.ts'
 import { useEnvVar } from './useEnvVar.ts'
 import { search, SearchResult } from './hoogle.ts'
+import { setDiscordFormat } from './format.ts'
 import { validateRequest, json } from 'https://deno.land/x/sift@0.6.0/mod.ts'
 import { verifySignature } from 'https://deno.land/x/discordeno@17.0.0/mod.ts'
 import { outdent } from 'https://deno.land/x/outdent@v0.8.0/src/index.ts'
@@ -22,7 +23,7 @@ function hoogleSearchResultMessageTemplate(type: 4 | 7, query: string, index: nu
       embeds: searchResult.map(
         def => ({
           title: def.item,
-          description: def.docs,
+          description: setDiscordFormat(def.docs),
           url: def.url,
           color: 16750592, // 0xFF9800, yellow
           author: {
@@ -170,7 +171,7 @@ const handler = async (request: Request): Promise<Response> => {
     if (parsedBody?.type === 1) return pingHandler()
     if (parsedBody?.type === 2 && parsedBody?.data?.name === 'hoogle') return hoogleCommandHandler(parsedBody)
     if (parsedBody?.type == 3) return hoogleCommandActionHandler(parsedBody)
-    else return new Response('could not find proper handler for request', { status: 404 })
+    return new Response('could not find proper handler for request', { status: 404 })
   } catch (e) {
     console.error(`
       an error has occurred while handling request:
