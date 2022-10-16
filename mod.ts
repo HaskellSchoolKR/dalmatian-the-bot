@@ -136,7 +136,15 @@ async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
       return json(updateHoogleSearchResultMessage(query, nextIndex, searchResult))
     }
     if (type === "remove") {
-      return json({ type: 7, data: { content: "remove test"/*`${user_id} ${author_id}` */ } })
+      const { application_id, token, user: { id }, message: { author: { id: author_id } } } = jsonBody
+
+      if (id === author_id)
+        await fetch(`https://discord.com/api/v10/webhooks/${application_id}/${token}/messages/@original`, {
+          method: 'DELETE'
+        })
+
+      //dummy response, will be ignored.
+      return json({ type: 6 })
     }
     return new Response('Button Interaction error', { status: 500 })
   } catch (e) {
@@ -189,9 +197,9 @@ const handler = async (request: Request): Promise<Response> => {
     `)
 
     //@TODO use schema to validate json
-    if (parsedBody?.type === 1) 
+    if (parsedBody?.type === 1)
       return pingHandler()
-    if (parsedBody?.type === 2 && parsedBody?.data?.name === 'hoogle') 
+    if (parsedBody?.type === 2 && parsedBody?.data?.name === 'hoogle')
       return hoogleCommandHandler(parsedBody)
     if (parsedBody?.type === 3)
       return hoogleCommandActionHandler(parsedBody)
