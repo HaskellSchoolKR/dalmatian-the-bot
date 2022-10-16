@@ -136,7 +136,7 @@ async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
       return json(updateHoogleSearchResultMessage(query, nextIndex, searchResult))
     }
     if (type === "remove") {
-      return json({ type: 7, data: { content: "sample remove" } })
+      return json({ type: 7, data: { content: `${user_id} ${author_id}` } })
     }
     return new Response('Button Interaction error', { status: 500 })
   } catch (e) {
