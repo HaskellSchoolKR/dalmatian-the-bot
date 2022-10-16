@@ -16,7 +16,7 @@ async function pingHandler(): Promise<Response> {
 }
 
 // 4 means CHANNEL_MESSAGE_WITH_SOURCE, 7 means UPDATE_MESSAGE
-function hoogleSearchResultMessageTemplate(type: 4 | 7, query: string, index: number, searchResult: SearchResult) {
+function hoogleSearchResultMessageTemplate(type: 4 | 7, query: string, index: number, origin: string, searchResult: SearchResult) {
   return {
     type,
     data: {
@@ -39,14 +39,14 @@ function hoogleSearchResultMessageTemplate(type: 4 | 7, query: string, index: nu
               type: 2, // button
               label: 'previous',
               style: 1, // primary button
-              custom_id: JSON.stringify({ type: 'prev', index, query }),
+              custom_id: JSON.stringify({ type: 'prev', index, query, origin }),
               disabled: index === 0
             },
             {
               type: 2, // button
               label: 'next',
               style: 1, // primary button
-              custom_id: JSON.stringify({ type: 'next', index, query })
+              custom_id: JSON.stringify({ type: 'next', index, query, origin })
             }
           ]
         },
@@ -57,7 +57,7 @@ function hoogleSearchResultMessageTemplate(type: 4 | 7, query: string, index: nu
               type: 2,
               label: 'remove',
               style: 4, // danger button
-              custom_id: JSON.stringify({ type: 'remove', index, query }),
+              custom_id: JSON.stringify({ type: 'remove', index, query, origin }),
             }
           ]
         }
@@ -66,16 +66,16 @@ function hoogleSearchResultMessageTemplate(type: 4 | 7, query: string, index: nu
   }
 }
 
-function createHoogleSearchResultMessage(query: string, searchResult: SearchResult) {
-  return hoogleSearchResultMessageTemplate(4, query, 0, searchResult) // 4 means CHANNEL_MESSAGE_WITH_SOURCE
+function createHoogleSearchResultMessage(query: string, origin: string, searchResult: SearchResult) {
+  return hoogleSearchResultMessageTemplate(4, query, 0, origin, searchResult) // 4 means CHANNEL_MESSAGE_WITH_SOURCE
 }
 
-function updateHoogleSearchResultMessage(query: string, index: number, searchResult: SearchResult) {
-  return hoogleSearchResultMessageTemplate(7, query, index, searchResult) // 7 means UPDATE_MESSAGE
+function updateHoogleSearchResultMessage(query: string, index: number, origin: string, searchResult: SearchResult) {
+  return hoogleSearchResultMessageTemplate(7, query, index, origin, searchResult) // 7 means UPDATE_MESSAGE
 }
 
 async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
-  const { data: { options: [ { value: query } ] } } = jsonBody
+  const { data: { options: [ { value: query } ] }, member: { user: { id } } } = jsonBody
 
   console.info(outdent`
     now processing query '${query}'
@@ -93,7 +93,7 @@ async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
       // 4 means CHANNEL_MESSAGE_WITH_SOURCE
       return json({ type: 4, data: { content: `cannot find any definition for query '${query}'.`} })
 
-    return json(createHoogleSearchResultMessage(query, searchResult))
+    return json(createHoogleSearchResultMessage(query, id, searchResult))
   } catch (e) {
     console.error(outdent`
       an error has occurred while handling '/hoogle' command.
@@ -111,14 +111,16 @@ async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
 
 //@TODO filter invalid action
 async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
-  const { data: { custom_id: action } } = jsonBody
+  const { data: { custom_id: action }, member: { user: { id } } } = jsonBody
 
   // if (user_id !== author_id) {
   //   return new Response('user and author is not equal', { status: 404 })
   // }
 
   try {
-    const { type, index, query } = JSON.parse(action)
+    const { type, index, query, origin } = JSON.parse(action)
+
+    if (origin !== id) throw new Error(`Not a owner`)
 
     if (type === "prev" || type === "next") {
       const nextIndex = type === 'prev' ? index - 1 : index + 1
@@ -133,15 +135,14 @@ async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
         // 7 means UPDATE_MESSAGE
         return json({ type: 7, data: { content: `no more definition for query '${query}' found.`} })
 
-      return json(updateHoogleSearchResultMessage(query, nextIndex, searchResult))
+      return json(updateHoogleSearchResultMessage(query, nextIndex, origin, searchResult))
     }
     if (type === "remove") {
-      const { application_id, token, user: { id }, message: { author: { id: author_id } } } = jsonBody
+      const { application_id, token } = jsonBody
 
-      if (id === author_id)
-        await fetch(`https://discord.com/api/v10/webhooks/${application_id}/${token}/messages/@original`, {
-          method: 'DELETE'
-        })
+      await fetch(`https://discord.com/api/v10/webhooks/${application_id}/${token}/messages/@original`, {
+        method: 'DELETE'
+      })
 
       //dummy response, will be ignored.
       return json({ type: 6 })
