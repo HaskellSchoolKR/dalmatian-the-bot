@@ -111,7 +111,11 @@ async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
 
 //@TODO filter invalid action
 async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
-  const { data: { custom_id: action } } = jsonBody
+  const { data: { custom_id: action }, user: { user_id }, message: { author: { id: author_id }} } = jsonBody
+
+  if (user_id !== author_id) {
+    return new Response('user and author is not equal', { status: 404 })
+  }
 
   try {
     const { type, index, query } = JSON.parse(action)
@@ -134,6 +138,7 @@ async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
     if (type === "remove") {
       return json({ type: 7, data: { content: "sample remove" } })
     }
+    return new Response('Button Interaction error', { status: 500 })
   } catch (e) {
     //@TODO: log precise action name
     console.error(outdent`
@@ -188,7 +193,7 @@ const handler = async (request: Request): Promise<Response> => {
       return pingHandler()
     if (parsedBody?.type === 2 && parsedBody?.data?.name === 'hoogle') 
       return hoogleCommandHandler(parsedBody)
-    if (parsedBody?.type === 3 && parsedBody?.user?.id === parsedBody?.message?.author?.id) 
+    if (parsedBody?.type === 3)
       return hoogleCommandActionHandler(parsedBody)
     return new Response('could not find proper handler for request', { status: 404 })
   } catch (e) {
