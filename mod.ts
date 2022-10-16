@@ -144,9 +144,9 @@ async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
     if (type === "remove") {
       const { application_id, token } = jsonBody
 
-      await fetch(`https://discord.com/api/v10/webhooks/${application_id}/${token}/messages/@original`, {
+      console.info((await fetch(`https://discord.com/api/v10/webhooks/${application_id}/${token}/messages/@original`, {
         method: 'DELETE'
-      })
+      })).status)
 
       //dummy response, will be ignored.
       return json({ type: 6 })
