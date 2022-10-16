@@ -111,7 +111,7 @@ async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
 
 //@TODO filter invalid action
 async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
-  const { data: { custom_id: action }, user: { user_id }, message: { author: { id: author_id }} } = jsonBody
+  const { data: { custom_id: action }, user: { id: user_id }, message: { author: { id: author_id }} } = jsonBody
 
   // if (user_id !== author_id) {
   //   return new Response('user and author is not equal', { status: 404 })
