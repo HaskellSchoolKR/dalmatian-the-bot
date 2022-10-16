@@ -93,7 +93,25 @@ async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
 
     if (searchResult.length === 0)
       // 4 means CHANNEL_MESSAGE_WITH_SOURCE
-      return json({ type: 4, data: { content: `cannot find any definition for query '${query}'.`} })
+      return json({
+        type: 4,
+        data: {
+          content: `cannot find any definition for query '${query}'.`
+        },
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                type: 2,
+                label: 'remove',
+                style: 4, // danger button
+                custom_id: JSON.stringify({ type: 'remove', index: -1, query, origin: id }),
+              }
+            ]
+          }
+        ]
+      })
 
     return json(createHoogleSearchResultMessage(query, id, searchResult))
   } catch (e) {
