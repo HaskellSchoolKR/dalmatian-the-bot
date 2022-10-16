@@ -21,6 +21,7 @@ function hoogleSearchResultMessageTemplate(type: 4 | 7, query: string, index: nu
   return {
     type,
     data: {
+      content: `here is the result of searching \`${query}\` in hoogle`,
       embeds: searchResult.map(
         def => ({
           title: def.item,
