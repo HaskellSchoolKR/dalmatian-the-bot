@@ -49,6 +49,17 @@ function hoogleSearchResultMessageTemplate(type: 4 | 7, query: string, index: nu
               custom_id: JSON.stringify({ type: 'next', index, query })
             }
           ]
+        },
+        {
+          type: 1,
+          components: [
+            {
+              type: 2,
+              label: 'remove',
+              style: 4, // danger button
+              custom_id: JSON.stringify({ type: 'remove', index, query }),
+            }
+          ]
         }
       ]
     }
@@ -78,7 +89,6 @@ async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
       ${JSON.stringify(searchResult)}
     `)
 
-    //@TODO add delete button
     if (searchResult.length === 0)
       // 4 means CHANNEL_MESSAGE_WITH_SOURCE
       return json({ type: 4, data: { content: `cannot find any definition for query '${query}'.`} })
@@ -105,19 +115,25 @@ async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
 
   try {
     const { type, index, query } = JSON.parse(action)
-    const nextIndex = type === 'prev' ? index - 1 : index + 1
-    const searchResult = await search(query, { start: nextIndex })
 
-    console.info(outdent`
-      result searching query '${query}': 
-      ${JSON.stringify(searchResult)}
-    `)
+    if (type === "prev" || type === "next") {
+      const nextIndex = type === 'prev' ? index - 1 : index + 1
+      const searchResult = await search(query, { start: nextIndex })
 
-    if (searchResult.length === 0)
-      // 4 means CHANNEL_MESSAGE_WITH_SOURCE
-      return json({ type: 4, data: { content: `no more definition for query '${query}' found.`} })
+      console.info(outdent`
+        result searching query '${query}': 
+        ${JSON.stringify(searchResult)}
+      `)
 
-    return json(updateHoogleSearchResultMessage(query, nextIndex, searchResult))
+      if (searchResult.length === 0)
+        // 7 means UPDATE_MESSAGE
+        return json({ type: 7, data: { content: `no more definition for query '${query}' found.`} })
+
+      return json(updateHoogleSearchResultMessage(query, nextIndex, searchResult))
+    }
+    if (type === "remove") {
+      return json({ type: 7, data: { content: "sample remove" } })
+    }
   } catch (e) {
     //@TODO: log precise action name
     console.error(outdent`
@@ -168,9 +184,12 @@ const handler = async (request: Request): Promise<Response> => {
     `)
 
     //@TODO use schema to validate json
-    if (parsedBody?.type === 1) return pingHandler()
-    if (parsedBody?.type === 2 && parsedBody?.data?.name === 'hoogle') return hoogleCommandHandler(parsedBody)
-    if (parsedBody?.type == 3) return hoogleCommandActionHandler(parsedBody)
+    if (parsedBody?.type === 1) 
+      return pingHandler()
+    if (parsedBody?.type === 2 && parsedBody?.data?.name === 'hoogle') 
+      return hoogleCommandHandler(parsedBody)
+    if (parsedBody?.type === 3 && parsedBody?.user?.id === parsedBody?.message?.author?.id) 
+      return hoogleCommandActionHandler(parsedBody)
     return new Response('could not find proper handler for request', { status: 404 })
   } catch (e) {
     console.error(`
