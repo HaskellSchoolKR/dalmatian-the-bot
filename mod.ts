@@ -111,7 +111,7 @@ async function hoogleCommandHandler(jsonBody: any): Promise<Response> {
 
 //@TODO filter invalid action
 async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
-  const { data: { custom_id: action }, user: { id: user_id }, message: { author: { id: author_id }} } = jsonBody
+  const { data: { custom_id: action } } = jsonBody
 
   // if (user_id !== author_id) {
   //   return new Response('user and author is not equal', { status: 404 })
@@ -136,7 +136,7 @@ async function hoogleCommandActionHandler(jsonBody: any): Promise<Response> {
       return json(updateHoogleSearchResultMessage(query, nextIndex, searchResult))
     }
     if (type === "remove") {
-      return json({ type: 7, data: { content: `${user_id} ${author_id}` } })
+      return json({ type: 7, data: { content: "remove test"/*`${user_id} ${author_id}` */ } })
     }
     return new Response('Button Interaction error', { status: 500 })
   } catch (e) {
