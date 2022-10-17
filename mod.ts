@@ -29,7 +29,11 @@ function hoogleSearchResultMessageTemplate(type: 4 | 7, query: string, index: nu
           url: def.url,
           color: 16750592, // 0xFF9800, yellow
           author: {
-            name: `${def.package.name}/${def.module.name}`
+            name: 'name' in def.package ?
+              'name' in def.module ?
+                `${def.package.name}/${def.module.name}`:
+                def.package.name:
+              ''
           }
         })
       ),

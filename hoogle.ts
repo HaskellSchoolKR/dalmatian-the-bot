@@ -10,12 +10,12 @@ interface SearchOptions {
 export type SearchResult = Array<{
   url: string
   module: {
-    name: string
-    url: string
+    name?: string
+    url?: string
   }
   package: {
-    name: string
-    url: string
+    name?: string
+    url?: string
   }
   item: string
   docs: string
@@ -26,13 +26,13 @@ const searchResultSchema = {
     properties: {
       url: { type: 'string '},
       module: {
-        properties: {
+        optionalProperties: {
           name: { type: 'string '},
           url: { type: 'string' }
         }
       },
       package: {
-        properties: {
+        optionalProperties: {
           name: { type: 'string '},
           url: { type: 'string' }
         }
